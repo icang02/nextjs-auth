@@ -1,17 +1,16 @@
-import { LoginButton } from "@/components/auth/login-button";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Poppins } from "next/font/google";
 import Link from "next/link";
 
-import { auth } from "@/auth";
+import { auth, signOut } from "@/auth";
 
 const font = Poppins({
   subsets: ["latin"],
   weight: ["600"],
 });
 
-export default async function Home() {
+export default async function SettingsPage() {
   const session = await auth();
 
   return (
@@ -25,21 +24,26 @@ export default async function Home() {
         >
           🔐 Auth
         </h1>
-        <p className="text-white text-lg">A simple authentication service</p>
+        <p className="text-white text-lg">{JSON.stringify(session)}</p>
         <div className="space-x-2">
-          {!session ? (
-            <LoginButton>
-              <Button variant={"secondary"} size={"lg"}>
-                Masuk
-              </Button>
-            </LoginButton>
-          ) : (
-            <Link href={"/settings"}>
-              <Button variant={"default"} size={"lg"}>
-                Settings
-              </Button>
-            </Link>
-          )}
+          <Link href={"/"}>
+            <Button variant={"default"} size={"lg"}>
+              Home Page
+            </Button>
+          </Link>
+          <form
+            action={async () => {
+              "use server";
+              await signOut({
+                redirectTo: "/auth/login",
+              });
+            }}
+            className="inline"
+          >
+            <Button type="submit" variant={"secondary"} size={"lg"}>
+              Logout
+            </Button>
+          </form>
         </div>
       </div>
     </main>
